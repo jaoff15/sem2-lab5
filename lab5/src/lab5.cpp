@@ -36,8 +36,8 @@ int main(){
 	int  iret1, iret2;
 
 	struct mq_attr attr;
-	attr.mq_maxmsg = 10;
-	attr.mq_msgsize = 1;
+	attr.mq_maxmsg = 100;
+	attr.mq_msgsize = 10;
 	message_queue = mq_open(MESSAGE_QUEUE, O_CREAT, PMODE, &attr);
 
 
