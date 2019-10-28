@@ -1,33 +1,34 @@
 /*
- * Keypad.cpp
+ *
  *
  *  Created on: Sep 24, 2019
  *      Author: jacoboffersen
  */
 
-#include "keypad.h"
+#include "numpad_driver.h"
 
-Keypad::Keypad() {
+NumpadDriver::NumpadDriver() {
 	initialized_ = false;
 	width_ = 4;
 	height_ = 4;
 	last_keys_pressed = "";
+	std::cout << "Numpad Driver Initialized" << std::endl;
 }
 
-Keypad::~Keypad() {
+NumpadDriver::~NumpadDriver() {
 
 }
-void Keypad::init() {
+void NumpadDriver::init() {
 	// Init all buttons in col. Coloums are initialized as outputs with default value of high.
-	for (u8 pin = 0; pin < KEYPAD_PIN_COL_LEN; pin++) {
-		std::string pin_id = std::to_string(KEYPAD_PIN_COL_BASE + KEYPAD_PIN_COL_LEN - pin - 1);
+	for (u8 pin = 0; pin < NUMPAD_PIN_COL_LEN; pin++) {
+		std::string pin_id = std::to_string(NUMPAD_PIN_COL_BASE + NUMPAD_PIN_COL_LEN - pin - 1);
 		column_[pin].setPinNumber(pin_id);
 		column_[pin].setDirection(out);
 		column_[pin].setValue(true);
 	}
 	// Init all buttons in row. The rows are initialized as inputs.
-	for (u8 pin = 0; pin < KEYPAD_PIN_ROW_LEN; pin++) {
-		std::string pin_id = std::to_string(KEYPAD_PIN_ROW_BASE + KEYPAD_PIN_ROW_LEN - pin - 1);
+	for (u8 pin = 0; pin < NUMPAD_PIN_ROW_LEN; pin++) {
+		std::string pin_id = std::to_string(NUMPAD_PIN_ROW_BASE + NUMPAD_PIN_ROW_LEN - pin - 1);
 		row_[pin].setPinNumber(pin_id);
 		row_[pin].setDirection(in);
 	}
@@ -35,7 +36,7 @@ void Keypad::init() {
 
 }
 
-std::string Keypad::check() {
+std::string NumpadDriver::check() {
 	if (!initialized_) {
 		return "";
 	}
@@ -54,7 +55,7 @@ std::string Keypad::check() {
 	return keys_pressed;
 }
 
-bool Keypad::getValue(const u8 col, const u8 row) {
+bool NumpadDriver::getValue(const u8 col, const u8 row) {
 	/* Set column low
 	 * Read row
 	 * Set column high

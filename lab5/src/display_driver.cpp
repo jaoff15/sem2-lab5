@@ -1,26 +1,27 @@
 /*
- * Display.cpp
+ *
  *
  *  Created on: Sep 26, 2019
  *      Author: jacoboffersen
  */
 
-#include "display.h"
+#include "display_driver.h"
 
-Display::Display() {
+DisplayDriver::DisplayDriver() {
 	data_bit_[DISPLAY_DATA_LEN] = { };
 }
 
-Display::~Display() {
+DisplayDriver::~DisplayDriver() {
 
 }
 
-void Display::init() {
+void DisplayDriver::init() {
 	initGpios();
 	initDisplay();
+	std::cout << "Display Driver Initialized" << std::endl;
 }
 
-void Display::print(std::string line1, std::string line2) {
+void DisplayDriver::print(std::string line1, std::string line2) {
 	clear();  										// Clear display
 //	home();
 	for (unsigned int j = 0; j < DISPLAY_HEIGHT; j++) {  	// For each row
@@ -37,7 +38,7 @@ void Display::print(std::string line1, std::string line2) {
 	}
 }
 
-void Display::initGpios() {
+void DisplayDriver::initGpios() {
 // Configure register select pin
 	register_select_.setPinNumber(std::to_string(DISPLAY_RS_PIN));
 	register_select_.setDirection(out);
@@ -57,7 +58,7 @@ void Display::initGpios() {
 	}
 }
 
-int Display::initDisplay() {
+int DisplayDriver::initDisplay() {
 // Power on
 
 // Wait 20ms
@@ -88,7 +89,7 @@ int Display::initDisplay() {
 	return 0;
 }
 
-void Display::setDataBits(const std::string str) {
+void DisplayDriver::setDataBits(const std::string str) {
 	register_select_.setValue(true);
 	read_write_.setValue(false);
 	char const character = str[0];
@@ -99,13 +100,13 @@ void Display::setDataBits(const std::string str) {
 	pulseEnableSignal();
 }
 
-void Display::pulseEnableSignal() {
+void DisplayDriver::pulseEnableSignal() {
 	enable_.setValue(false);
 	sleep.millisecond(1);
 	enable_.setValue(true);
 }
 
-void Display::sendCommand(const std::bitset<10> command) {
+void DisplayDriver::sendCommand(const std::bitset<10> command) {
 	register_select_.setValue(command[command.size() - 1]);  	// Low for instruction transfer
 	read_write_.setValue(command[command.size() - 2]);  		// Set to write mode
 	for (unsigned int i = 0; i < BYTE; i++) {
@@ -114,20 +115,20 @@ void Display::sendCommand(const std::bitset<10> command) {
 	pulseEnableSignal();
 }
 
-void Display::sendData(const char data) {
+void DisplayDriver::sendData(const char data) {
 	std::string data_string;
 	data_string += data;
 	sendData(data_string);
 }
 
-void Display::sendData(const std::string data) {
+void DisplayDriver::sendData(const std::string data) {
 	sleep.millisecond(1);
 	register_select_.setValue(true);  	// High for data
 	read_write_.setValue(false);		// Set to write mode
 	setDataBits(data);  				// Set data bit
 }
 
-void Display::setFunction() {
+void DisplayDriver::setFunction() {
 	// RS R/W DB7 DB6 DB5 DB4 DB3 DB2 DB1 DB0
 	// 0   0   0   0   1  DL   N   F   X   X
 	// Set interface data length DL ('1' for 8 bit)
@@ -138,32 +139,32 @@ void Display::setFunction() {
 	sendCommand((std::bitset<10>) "0000111000");
 }
 
-void Display::displayOnOffFunction() {
+void DisplayDriver::displayOnOffFunction() {
 	// RS R/W DB7 DB6 DB5 DB4 DB3 DB2 DB1 DB0
 	// 0   0   0   0   0   0   1   D   C   B
 	sendCommand((std::bitset<10>) "0000001100");
 	sleep.millisecond(1000);
 }
 
-void Display::home() {
+void DisplayDriver::home() {
 	// RS R/W DB7 DB6 DB5 DB4 DB3 DB2 DB1 DB0
 	// 0   0   0   0   0   0   0   0   1   X
 	sendCommand((std::bitset<10>) "0000000010");
 }
 
-void Display::clear() {
+void DisplayDriver::clear() {
 // RS R/W DB7 DB6 DB5 DB4 DB3 DB2 DB1 DB0
 // 0   0   0   0   0   0   0   0   0   1
 	sendCommand((std::bitset<10>) "0000000001");
 }
 
-void Display::setEntryMode() {
+void DisplayDriver::setEntryMode() {
 	// RS R/W DB7 DB6 DB5 DB4 DB3 DB2 DB1 DB0
 	// 0   0   0   0   0   0   0   1   1   1
 	sendCommand((std::bitset<10>) "0000000110");
 }
 
-void Display::setEntryAddress(const int line_number) {
+void DisplayDriver::setEntryAddress(const int line_number) {
 	// RS R/W DB7 DB6 DB5 DB4 DB3 DB2 DB1 DB0
 	// 0   0   1   x  0   0   0   0   0   0
 	// x = 1 for line 1 otherwise x = 0

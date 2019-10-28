@@ -1,12 +1,12 @@
 /*
- * Display.h
+ *
  *
  *  Created on: Sep 26, 2019
  *      Author: jacoboffersen
  */
 
-#ifndef DISPLAY_H_
-#define DISPLAY_H_
+#ifndef DISPLAY_DRIVER_H_
+#define DISPLAY_DRIVER_H_
 
 #include <iostream>       // std::cout
 #include <string>         // std::string
@@ -25,10 +25,10 @@
 
 #define BYTE 				8
 
-class Display {
+class DisplayDriver {
 public:
-	Display();
-	virtual ~Display();
+	DisplayDriver();
+	virtual ~DisplayDriver();
 
 	void init();
 	void print(std::string line1, std::string line2);
@@ -58,4 +58,4 @@ private:
 
 };
 
-#endif /* DISPLAY_H_ */
+#endif /* DISPLAY_DRIVER_H_ */
